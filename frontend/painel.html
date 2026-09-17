@@ -44,9 +44,25 @@
 
         </div>
 
+        <section class="visitantes">
+
+            <h2>VISITANTES REGISTRADOS</h2>
+
+            <p id="mensagemVisitantes">
+                Carregando visitantes...
+            </p>
+
+            <div id="listaVisitantes"></div>
+
+        </section>
+
     </main>
 
     <script>
+
+        // ==========================================
+        // VERIFICA A SESSÃO
+        // ==========================================
 
         async function verificarSessao() {
 
@@ -56,13 +72,17 @@
 
                 if (!resposta.ok) {
                     window.location.href = "login.html";
-                    return;
+                    return false;
                 }
 
                 const dados = await resposta.json();
 
-                document.getElementById("usuarioLogado").textContent =
+                document.getElementById(
+                    "usuarioLogado"
+                ).textContent =
                     `Usuário: ${dados.usuario.nome}`;
+
+                return true;
 
             } catch (erro) {
 
@@ -72,16 +92,122 @@
                 );
 
                 window.location.href = "login.html";
+
+                return false;
             }
         }
+
+        // ==========================================
+        // CARREGA VISITANTES
+        // ==========================================
+
+        async function carregarVisitantes() {
+
+            try {
+
+                const resposta = await fetch(
+                    "/api/visitantes"
+                );
+
+                if (!resposta.ok) {
+
+                    document.getElementById(
+                        "mensagemVisitantes"
+                    ).textContent =
+                        "Não foi possível carregar os visitantes.";
+
+                    return;
+                }
+
+                const dados = await resposta.json();
+
+                const lista =
+                    document.getElementById(
+                        "listaVisitantes"
+                    );
+
+                const mensagem =
+                    document.getElementById(
+                        "mensagemVisitantes"
+                    );
+
+                lista.innerHTML = "";
+
+                if (dados.visitantes.length === 0) {
+
+                    mensagem.textContent =
+                        "Nenhum visitante registrado.";
+
+                    return;
+                }
+
+                mensagem.textContent =
+                    `${dados.visitantes.length} visitante(s) registrado(s).`;
+
+                dados.visitantes.forEach((visitante) => {
+
+                    const registro =
+                        document.createElement("div");
+
+                    registro.className =
+                        "visitante-card";
+
+                    registro.innerHTML = `
+                        <strong>${visitante.nome}</strong>
+
+                        <span>
+                            Visitando:
+                            ${visitante.pessoaVisitada}
+                        </span>
+
+                        <span>
+                            Motivo:
+                            ${visitante.motivo}
+                        </span>
+
+                        <span>
+                            Data:
+                            ${visitante.dataHora}
+                        </span>
+
+                        <span>
+                            Registrado por:
+                            ${visitante.registradoPor}
+                        </span>
+                    `;
+
+                    lista.appendChild(registro);
+
+                });
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao carregar visitantes:",
+                    erro
+                );
+
+                document.getElementById(
+                    "mensagemVisitantes"
+                ).textContent =
+                    "Erro ao conectar ao servidor.";
+            }
+        }
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
 
         async function sair() {
 
             try {
 
-                await fetch("/api/logout", {
-                    method: "POST"
-                });
+                await fetch(
+                    "/api/logout",
+                    {
+                        method: "POST"
+                    }
+                );
 
             } catch (erro) {
 
@@ -89,13 +215,26 @@
                     "Erro ao sair:",
                     erro
                 );
-
             }
 
             window.location.href = "index.html";
         }
 
-        verificarSessao();
+        // ==========================================
+        // INICIALIZAÇÃO
+        // ==========================================
+
+        async function iniciarPainel() {
+
+            const autenticado =
+                await verificarSessao();
+
+            if (autenticado) {
+                await carregarVisitantes();
+            }
+        }
+
+        iniciarPainel();
 
     </script>
 
