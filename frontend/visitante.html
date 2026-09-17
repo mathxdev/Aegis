@@ -26,18 +26,21 @@
 
             <input
                 type="text"
+                id="nome"
                 placeholder="Nome completo"
                 required
             >
 
             <input
                 type="text"
+                id="pessoaVisitada"
                 placeholder="Pessoa que deseja visitar"
                 required
             >
 
             <input
                 type="text"
+                id="motivo"
                 placeholder="Motivo da visita"
                 required
             >
@@ -51,13 +54,9 @@
 
         </form>
 
-        <div id="successMessage" class="success-message">
-            Visita registrada com sucesso!
-        </div>
-
         <button
             class="btn btn-secondary"
-            onclick="window.location.href='index.html'"
+            onclick="window.location.href='painel.html'"
         >
             VOLTAR
         </button>
@@ -65,16 +64,68 @@
     </main>
 
     <script>
-        const form = document.getElementById("visitorForm");
-        const successMessage = document.getElementById("successMessage");
 
-        form.addEventListener("submit", (event) => {
+        const form = document.getElementById("visitorForm");
+
+        form.addEventListener("submit", async (event) => {
+
             event.preventDefault();
 
-            successMessage.classList.add("show");
+            const nome =
+                document.getElementById("nome").value;
 
-            form.reset();
+            const pessoaVisitada =
+                document.getElementById("pessoaVisitada").value;
+
+            const motivo =
+                document.getElementById("motivo").value;
+
+            try {
+
+                const resposta = await fetch(
+                    "/api/visitantes",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            nome: nome,
+                            pessoaVisitada: pessoaVisitada,
+                            motivo: motivo
+                        })
+                    }
+                );
+
+                const dados = await resposta.json();
+
+                if (!resposta.ok) {
+
+                    alert(dados.mensagem);
+                    return;
+
+                }
+
+                alert(dados.mensagem);
+
+                form.reset();
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao registrar visitante:",
+                    erro
+                );
+
+                alert(
+                    "Não foi possível conectar ao servidor."
+                );
+            }
+
         });
+
     </script>
 
 </body>

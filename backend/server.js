@@ -8,10 +8,23 @@ const app = express();
 
 const PORT = 3000;
 
+// ==========================================
+// CAMINHOS DOS DADOS
+// ==========================================
+
 const caminhoUsuarios = path.join(
     __dirname,
     "../data/usuarios.json"
 );
+
+const caminhoVisitantes = path.join(
+    __dirname,
+    "../data/visitantes.json"
+);
+
+// ==========================================
+// CONFIGURAÇÕES
+// ==========================================
 
 app.use(express.json());
 
@@ -33,21 +46,31 @@ app.use(
     )
 );
 
+// ==========================================
+// PÁGINA INICIAL
+// ==========================================
+
 app.get("/", (req, res) => {
     res.sendFile(
         path.join(__dirname, "../frontend/index.html")
     );
 });
 
+// ==========================================
 // ROTA DE TESTE
+// ==========================================
 
 app.get("/api/teste", (req, res) => {
+
     res.json({
         mensagem: "Backend do Aegis funcionando!"
     });
+
 });
 
+// ==========================================
 // ROTA DE CADASTRO
+// ==========================================
 
 app.post("/api/cadastro", async (req, res) => {
 
@@ -55,15 +78,15 @@ app.post("/api/cadastro", async (req, res) => {
 
         const { nome, usuario, senha } = req.body;
 
-        // Verifica se todos os campos foram enviados
         if (!nome || !usuario || !senha) {
+
             return res.status(400).json({
                 sucesso: false,
                 mensagem: "Preencha todos os campos."
             });
+
         }
 
-        // Lê os usuários existentes
         const usuarios = JSON.parse(
             fs.readFileSync(
                 caminhoUsuarios,
@@ -71,35 +94,32 @@ app.post("/api/cadastro", async (req, res) => {
             )
         );
 
-        // Verifica se o usuário já existe
         const usuarioExiste = usuarios.find(
             (item) => item.usuario === usuario
         );
 
         if (usuarioExiste) {
+
             return res.status(409).json({
                 sucesso: false,
                 mensagem: "Esse usuário já existe."
             });
+
         }
 
-        // Cria o hash da senha
         const senhaHash = await bcrypt.hash(
             senha,
             10
         );
 
-        // Cria o novo usuário
         const novoUsuario = {
             nome: nome,
             usuario: usuario,
             senha: senhaHash
         };
 
-        // Adiciona o usuário
         usuarios.push(novoUsuario);
 
-        // Salva no arquivo
         fs.writeFileSync(
             caminhoUsuarios,
             JSON.stringify(
@@ -130,10 +150,112 @@ app.post("/api/cadastro", async (req, res) => {
             sucesso: false,
             mensagem: "Erro interno do servidor."
         });
+
     }
+
 });
 
+// ==========================================
+// ROTA DE REGISTRO DE VISITANTE
+// ==========================================
+
+app.post("/api/visitantes", (req, res) => {
+
+    try {
+
+        // Verifica se existe usuário logado
+        if (!req.session.usuario) {
+
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Você precisa estar logado."
+            });
+
+        }
+
+        const {
+            nome,
+            pessoaVisitada,
+            motivo
+        } = req.body;
+
+        // Verifica os campos
+        if (!nome || !pessoaVisitada || !motivo) {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha todos os campos."
+            });
+
+        }
+
+        // Lê os visitantes existentes
+        const visitantes = JSON.parse(
+            fs.readFileSync(
+                caminhoVisitantes,
+                "utf8"
+            )
+        );
+
+        // Cria o registro
+        const novoVisitante = {
+
+            nome: nome,
+
+            pessoaVisitada: pessoaVisitada,
+
+            motivo: motivo,
+
+            dataHora: new Date().toLocaleString(
+                "pt-BR"
+            ),
+
+            registradoPor: req.session.usuario.usuario
+
+        };
+
+        // Adiciona à lista
+        visitantes.push(novoVisitante);
+
+        // Salva no arquivo
+        fs.writeFileSync(
+            caminhoVisitantes,
+            JSON.stringify(
+                visitantes,
+                null,
+                4
+            )
+        );
+
+        console.log(
+            "Visitante registrado:",
+            nome
+        );
+
+        res.status(201).json({
+            sucesso: true,
+            mensagem: "Visita registrada com sucesso!"
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao registrar visitante:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno do servidor."
+        });
+
+    }
+
+});
+
+// ==========================================
 // ROTA DE LOGIN
+// ==========================================
 
 app.post("/api/login", async (req, res) => {
 
@@ -141,15 +263,15 @@ app.post("/api/login", async (req, res) => {
 
         const { usuario, senha } = req.body;
 
-        // Verifica se os campos foram enviados
         if (!usuario || !senha) {
+
             return res.status(400).json({
                 sucesso: false,
                 mensagem: "Informe usuário e senha."
             });
+
         }
 
-        // Lê os usuários cadastrados
         const usuarios = JSON.parse(
             fs.readFileSync(
                 caminhoUsuarios,
@@ -157,39 +279,40 @@ app.post("/api/login", async (req, res) => {
             )
         );
 
-        // Procura o usuário
         const usuarioEncontrado = usuarios.find(
             (item) => item.usuario === usuario
         );
 
-        // Usuário não encontrado
         if (!usuarioEncontrado) {
+
             return res.status(401).json({
                 sucesso: false,
                 mensagem: "Usuário ou senha incorretos."
             });
+
         }
 
-        // Compara a senha digitada
-        // com o hash salvo
         const senhaCorreta = await bcrypt.compare(
             senha,
             usuarioEncontrado.senha
         );
 
-        // Senha incorreta
         if (!senhaCorreta) {
+
             return res.status(401).json({
                 sucesso: false,
                 mensagem: "Usuário ou senha incorretos."
             });
+
         }
 
-        // CRIA A SESSÃO
-
+        // Cria a sessão
         req.session.usuario = {
+
             nome: usuarioEncontrado.nome,
+
             usuario: usuarioEncontrado.usuario
+
         };
 
         console.log(
@@ -213,7 +336,9 @@ app.post("/api/login", async (req, res) => {
             sucesso: false,
             mensagem: "Erro interno do servidor."
         });
+
     }
+
 });
 
 // ==========================================
@@ -223,10 +348,12 @@ app.post("/api/login", async (req, res) => {
 app.get("/api/sessao", (req, res) => {
 
     if (!req.session.usuario) {
+
         return res.status(401).json({
             autenticado: false,
             mensagem: "Usuário não autenticado."
         });
+
     }
 
     res.json({
@@ -245,6 +372,7 @@ app.post("/api/logout", (req, res) => {
     req.session.destroy((erro) => {
 
         if (erro) {
+
             console.error(
                 "Erro ao encerrar sessão:",
                 erro
@@ -254,17 +382,21 @@ app.post("/api/logout", (req, res) => {
                 sucesso: false,
                 mensagem: "Erro ao sair."
             });
+
         }
 
         res.json({
             sucesso: true,
             mensagem: "Sessão encerrada."
         });
+
     });
 
 });
 
+// ==========================================
 // INICIA O SERVIDOR
+// ==========================================
 
 app.listen(PORT, () => {
 
