@@ -22,6 +22,10 @@
             PAINEL DE CONTROLE
         </p>
 
+        <p id="usuarioLogado">
+            Verificando sessão...
+        </p>
+
         <div class="actions">
 
             <button
@@ -43,9 +47,45 @@
     </main>
 
     <script>
-        function sair() {
+
+        async function verificarSessao() {
+
+            try {
+
+                const resposta = await fetch("/api/sessao");
+
+                if (!resposta.ok) {
+                    window.location.href = "login.html";
+                    return;
+                }
+
+                const dados = await resposta.json();
+
+                document.getElementById("usuarioLogado").textContent =
+                    `Usuário: ${dados.usuario.nome}`;
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao verificar sessão:",
+                    erro
+                );
+
+                window.location.href = "login.html";
+            }
+        }
+
+        async function sair() {
+
+            await fetch("/api/logout", {
+                method: "POST"
+            });
+
             window.location.href = "index.html";
         }
+
+        verificarSessao();
+
     </script>
 
 </body>

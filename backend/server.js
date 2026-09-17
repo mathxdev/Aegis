@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
+const session = require("express-session");
 
 const app = express();
 
@@ -14,7 +15,23 @@ const caminhoUsuarios = path.join(
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(
+    session({
+        secret: "aegis-chave-secreta",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60
+        }
+    })
+);
+
+app.use(
+    express.static(
+        path.join(__dirname, "../frontend")
+    )
+);
 
 app.get("/", (req, res) => {
     res.sendFile(
@@ -22,14 +39,16 @@ app.get("/", (req, res) => {
     );
 });
 
-// Rota de teste do backend
+// ROTA DE TESTE
+
 app.get("/api/teste", (req, res) => {
     res.json({
         mensagem: "Backend do Aegis funcionando!"
     });
 });
 
-// Rota de cadastro
+// ROTA DE CADASTRO
+
 app.post("/api/cadastro", async (req, res) => {
 
     try {
@@ -46,7 +65,10 @@ app.post("/api/cadastro", async (req, res) => {
 
         // Lê os usuários existentes
         const usuarios = JSON.parse(
-            fs.readFileSync(caminhoUsuarios, "utf8")
+            fs.readFileSync(
+                caminhoUsuarios,
+                "utf8"
+            )
         );
 
         // Verifica se o usuário já existe
@@ -62,7 +84,10 @@ app.post("/api/cadastro", async (req, res) => {
         }
 
         // Cria o hash da senha
-        const senhaHash = await bcrypt.hash(senha, 10);
+        const senhaHash = await bcrypt.hash(
+            senha,
+            10
+        );
 
         // Cria o novo usuário
         const novoUsuario = {
@@ -71,16 +96,23 @@ app.post("/api/cadastro", async (req, res) => {
             senha: senhaHash
         };
 
-        // Adiciona o usuário à lista
+        // Adiciona o usuário
         usuarios.push(novoUsuario);
 
         // Salva no arquivo
         fs.writeFileSync(
             caminhoUsuarios,
-            JSON.stringify(usuarios, null, 4)
+            JSON.stringify(
+                usuarios,
+                null,
+                4
+            )
         );
 
-        console.log("Novo usuário cadastrado:", usuario);
+        console.log(
+            "Novo usuário cadastrado:",
+            usuario
+        );
 
         res.status(201).json({
             sucesso: true,
@@ -89,7 +121,10 @@ app.post("/api/cadastro", async (req, res) => {
 
     } catch (erro) {
 
-        console.error("Erro no cadastro:", erro);
+        console.error(
+            "Erro no cadastro:",
+            erro
+        );
 
         res.status(500).json({
             sucesso: false,
@@ -98,7 +133,8 @@ app.post("/api/cadastro", async (req, res) => {
     }
 });
 
-// Rota de login
+// ROTA DE LOGIN
+
 app.post("/api/login", async (req, res) => {
 
     try {
@@ -115,7 +151,10 @@ app.post("/api/login", async (req, res) => {
 
         // Lê os usuários cadastrados
         const usuarios = JSON.parse(
-            fs.readFileSync(caminhoUsuarios, "utf8")
+            fs.readFileSync(
+                caminhoUsuarios,
+                "utf8"
+            )
         );
 
         // Procura o usuário
@@ -146,8 +185,17 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        // Login realizado
-        console.log("Login realizado:", usuario);
+        // CRIA A SESSÃO
+
+        req.session.usuario = {
+            nome: usuarioEncontrado.nome,
+            usuario: usuarioEncontrado.usuario
+        };
+
+        console.log(
+            "Login realizado:",
+            usuario
+        );
 
         res.json({
             sucesso: true,
@@ -156,7 +204,10 @@ app.post("/api/login", async (req, res) => {
 
     } catch (erro) {
 
-        console.error("Erro no login:", erro);
+        console.error(
+            "Erro no login:",
+            erro
+        );
 
         res.status(500).json({
             sucesso: false,
@@ -165,8 +216,60 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
+// ==========================================
+// VERIFICAÇÃO DA SESSÃO
+// ==========================================
+
+app.get("/api/sessao", (req, res) => {
+
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            autenticado: false,
+            mensagem: "Usuário não autenticado."
+        });
+    }
+
+    res.json({
+        autenticado: true,
+        usuario: req.session.usuario
+    });
+
+});
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+app.post("/api/logout", (req, res) => {
+
+    req.session.destroy((erro) => {
+
+        if (erro) {
+            console.error(
+                "Erro ao encerrar sessão:",
+                erro
+            );
+
+            return res.status(500).json({
+                sucesso: false,
+                mensagem: "Erro ao sair."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            mensagem: "Sessão encerrada."
+        });
+    });
+
+});
+
+// INICIA O SERVIDOR
+
 app.listen(PORT, () => {
+
     console.log(
         `Servidor Aegis rodando em http://localhost:${PORT}`
     );
+
 });
