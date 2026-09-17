@@ -22,7 +22,7 @@
             PAINEL DE CONTROLE
         </p>
 
-        <p id="usuarioLogado">
+        <p id="usuarioLogado" class="user-info">
             Verificando sessão...
         </p>
 
@@ -77,9 +77,20 @@
 
         async function sair() {
 
-            await fetch("/api/logout", {
-                method: "POST"
-            });
+            try {
+
+                await fetch("/api/logout", {
+                    method: "POST"
+                });
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao sair:",
+                    erro
+                );
+
+            }
 
             window.location.href = "index.html";
         }
