@@ -84,7 +84,11 @@
 
             const dados = await resposta.json();
 
-            alert(dados.mensagem);
+                if (dados.sucesso) {
+                    window.location.href = "painel.html";
+                } else {
+                    alert(dados.mensagem);
+                }
         });
     </script>
 
