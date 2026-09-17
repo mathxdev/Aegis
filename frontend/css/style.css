@@ -1,0 +1,211 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #0b0d10;
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+}
+
+.totem {
+    width: 420px;
+    min-height: 600px;
+
+    background: #15191f;
+
+    border: 1px solid #2d333b;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+}
+
+.logo {
+    font-size: 42px;
+    font-weight: bold;
+    letter-spacing: 6px;
+
+    color: #2f81f7;
+}
+
+.subtitle {
+    margin-top: 12px;
+
+    color: #b8bec8;
+
+    font-size: 14px;
+    letter-spacing: 3px;
+}
+
+.actions {
+    width: 100%;
+
+    margin-top: 70px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.btn {
+    width: 100%;
+    padding: 18px;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.btn-primary {
+    background: #2f81f7;
+    color: #ffffff;
+
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #256dcc;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #ffffff;
+
+    border: 1px solid #3d4652;
+}
+
+.btn-secondary:hover {
+    background: #20262e;
+}
+
+.status {
+    margin-top: 60px;
+
+    color: #8d96a3;
+
+    font-size: 13px;
+}
+
+/*FORMULÁRIO DE VISITANTE*/
+
+.visitor-form {
+    width: 100%;
+    margin-top: 50px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.visitor-form input {
+    width: 100%;
+    padding: 16px;
+
+    background: #0f1318;
+    color: #ffffff;
+
+    border: 1px solid #3d4652;
+    border-radius: 10px;
+
+    font-size: 15px;
+    outline: none;
+}
+
+.visitor-form input::placeholder {
+    color: #697382;
+}
+
+.visitor-form input:focus {
+    border-color: #2f81f7;
+}
+
+.visitor-form .btn {
+    margin-top: 10px;
+}
+
+/*MENSAGEM DE SUCESSO*/
+
+.success-message {
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 14px;
+
+    background: #15191f;
+    color: #2f81f7;
+
+    border: 1px solid #2f81f7;
+    border-radius: 10px;
+
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+
+    display: none;
+}
+
+.success-message.show {
+    display: block;
+}
+
+/*TELA DE LOGIN*/
+
+.login-form {
+    width: 100%;
+
+    margin-top: 50px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.input-group {
+    width: 100%;
+}
+
+.input-group input {
+    width: 100%;
+
+    padding: 18px;
+
+    background: #0f1318;
+    color: #ffffff;
+
+    border: 1px solid #3d4652;
+    border-radius: 10px;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #697382;
+}
+
+.input-group input:focus {
+    border-color: #2f81f7;
+}
+
+.login-form .btn {
+    margin-top: 10px;
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aegis | Visitante</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main class="totem">
+
+        <div class="logo">
+            AEGIS
+        </div>
+
+        <p class="subtitle">
+            ACESSO DE VISITANTE
+        </p>
+
+        <form class="visitor-form" id="visitorForm">
+
+            <input
+                type="text"
+                placeholder="Nome completo"
+                required
+            >
+
+            <input
+                type="text"
+                placeholder="Pessoa que deseja visitar"
+                required
+            >
+
+            <input
+                type="text"
+                placeholder="Motivo da visita"
+                required
+            >
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                REGISTRAR VISITA
+            </button>
+
+        </form>
+
+        <div id="successMessage" class="success-message">
+            Visita registrada com sucesso!
+        </div>
+
+        <button
+            class="btn btn-secondary"
+            onclick="window.location.href='index.html'"
+        >
+            VOLTAR
+        </button>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("visitorForm");
+        const successMessage = document.getElementById("successMessage");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            successMessage.classList.add("show");
+
+            form.reset();
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Aegis | Cadastro</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main class="totem">
+
+        <div class="logo">
+            AEGIS
+        </div>
+
+        <p class="subtitle">
+            CADASTRO DE USUÁRIO
+        </p>
+
+        <form class="login-form" id="cadastroForm">
+
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="nome"
+                    placeholder="Nome completo"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="usuario"
+                    placeholder="Nome de usuário"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Senha"
+                    required
+                >
+            </div>
+
+            <div class="input-group">
+                <input
+                    type="password"
+                    id="confirmarSenha"
+                    placeholder="Confirmar senha"
+                    required
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                CADASTRAR
+            </button>
+
+        </form>
+
+        <button
+            class="btn btn-secondary"
+            onclick="window.location.href='login.html'"
+        >
+            VOLTAR
+        </button>
+
+    </main>
+
+    <script>
+        const form = document.getElementById("cadastroForm");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const usuario = document.getElementById("usuario").value;
+            const senha = document.getElementById("senha").value;
+            const confirmarSenha = document.getElementById("confirmarSenha").value;
+
+            if (senha !== confirmarSenha) {
+                alert("As senhas não são iguais.");
+                return;
+            }
+
+            const resposta = await fetch("/api/cadastro", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    nome: nome,
+                    usuario: usuario,
+                    senha: senha
+                })
+            });
+
+            const dados = await resposta.json();
+
+            alert(dados.mensagem);
+
+            form.reset();
+        });
+    </script>
+
+</body>
+
+</html>
