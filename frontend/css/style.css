@@ -209,3 +209,66 @@ body {
 .login-form .btn {
     margin-top: 10px;
 }
+
+/* LISTA DE VISITANTES */
+
+.visitantes {
+    width: 100%;
+    margin-top: 45px;
+}
+
+.visitantes h2 {
+    margin-bottom: 12px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+#mensagemVisitantes {
+    margin-bottom: 15px;
+
+    color: #8d96a3;
+
+    font-size: 13px;
+}
+
+#listaVisitantes {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.visitante-card {
+    width: 100%;
+
+    padding: 16px;
+
+    background: #0f1318;
+
+    border: 1px solid #2d333b;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    text-align: left;
+}
+
+.visitante-card strong {
+    color: #ffffff;
+
+    font-size: 15px;
+}
+
+.visitante-card span {
+    color: #8d96a3;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
