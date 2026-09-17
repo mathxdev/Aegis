@@ -60,6 +60,34 @@
 
     </main>
 
+    <script>
+        const form = document.getElementById("loginForm");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const usuario = document.getElementById("usuario").value;
+            const senha = document.getElementById("senha").value;
+
+            const resposta = await fetch("/api/login", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    usuario: usuario,
+                    senha: senha
+                })
+            });
+
+            const dados = await resposta.json();
+
+            alert(dados.mensagem);
+        });
+    </script>
+
 </body>
 
 </html>

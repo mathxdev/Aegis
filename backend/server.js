@@ -98,6 +98,73 @@ app.post("/api/cadastro", async (req, res) => {
     }
 });
 
+// Rota de login
+app.post("/api/login", async (req, res) => {
+
+    try {
+
+        const { usuario, senha } = req.body;
+
+        // Verifica se os campos foram enviados
+        if (!usuario || !senha) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Informe usuário e senha."
+            });
+        }
+
+        // Lê os usuários cadastrados
+        const usuarios = JSON.parse(
+            fs.readFileSync(caminhoUsuarios, "utf8")
+        );
+
+        // Procura o usuário
+        const usuarioEncontrado = usuarios.find(
+            (item) => item.usuario === usuario
+        );
+
+        // Usuário não encontrado
+        if (!usuarioEncontrado) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Usuário ou senha incorretos."
+            });
+        }
+
+        // Compara a senha digitada
+        // com o hash salvo
+        const senhaCorreta = await bcrypt.compare(
+            senha,
+            usuarioEncontrado.senha
+        );
+
+        // Senha incorreta
+        if (!senhaCorreta) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Usuário ou senha incorretos."
+            });
+        }
+
+        // Login realizado
+        console.log("Login realizado:", usuario);
+
+        res.json({
+            sucesso: true,
+            mensagem: "Login realizado com sucesso!"
+        });
+
+    } catch (erro) {
+
+        console.error("Erro no login:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno do servidor."
+        });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(
         `Servidor Aegis rodando em http://localhost:${PORT}`
