@@ -395,6 +395,50 @@ app.post("/api/logout", (req, res) => {
 });
 
 // ==========================================
+// LISTA DE VISITANTES
+// ==========================================
+
+app.get("/api/visitantes", (req, res) => {
+
+    try {
+
+        // Verifica se existe usuário logado
+        if (!req.session.usuario) {
+            return res.status(401).json({
+                sucesso: false,
+                mensagem: "Você precisa estar logado."
+            });
+        }
+
+        // Lê os visitantes registrados
+        const visitantes = JSON.parse(
+            fs.readFileSync(
+                caminhoVisitantes,
+                "utf8"
+            )
+        );
+
+        res.json({
+            sucesso: true,
+            visitantes: visitantes
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao buscar visitantes:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro interno do servidor."
+        });
+    }
+
+});
+
+// ==========================================
 // INICIA O SERVIDOR
 // ==========================================
 
