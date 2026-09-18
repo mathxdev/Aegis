@@ -48,6 +48,14 @@
 
             <h2>VISITANTES REGISTRADOS</h2>
 
+            <input
+                type="text"
+                id="buscaVisitante"
+                class="busca-visitante"
+                placeholder="Buscar visitante..."
+                oninput="filtrarVisitantes()"
+            >
+
             <p id="mensagemVisitantes">
                 Carregando visitantes...
             </p>
@@ -59,6 +67,8 @@
     </main>
 
     <script>
+
+        let visitantes = [];
 
         // ==========================================
         // VERIFICA A SESSÃO
@@ -121,64 +131,9 @@
 
                 const dados = await resposta.json();
 
-                const lista =
-                    document.getElementById(
-                        "listaVisitantes"
-                    );
+                visitantes = dados.visitantes;
 
-                const mensagem =
-                    document.getElementById(
-                        "mensagemVisitantes"
-                    );
-
-                lista.innerHTML = "";
-
-                if (dados.visitantes.length === 0) {
-
-                    mensagem.textContent =
-                        "Nenhum visitante registrado.";
-
-                    return;
-                }
-
-                mensagem.textContent =
-                    `${dados.visitantes.length} visitante(s) registrado(s).`;
-
-                dados.visitantes.forEach((visitante) => {
-
-                    const registro =
-                        document.createElement("div");
-
-                    registro.className =
-                        "visitante-card";
-
-                    registro.innerHTML = `
-                        <strong>${visitante.nome}</strong>
-
-                        <span>
-                            Visitando:
-                            ${visitante.pessoaVisitada}
-                        </span>
-
-                        <span>
-                            Motivo:
-                            ${visitante.motivo}
-                        </span>
-
-                        <span>
-                            Data:
-                            ${visitante.dataHora}
-                        </span>
-
-                        <span>
-                            Registrado por:
-                            ${visitante.registradoPor}
-                        </span>
-                    `;
-
-                    lista.appendChild(registro);
-
-                });
+                exibirVisitantes(visitantes);
 
             } catch (erro) {
 
@@ -192,6 +147,115 @@
                 ).textContent =
                     "Erro ao conectar ao servidor.";
             }
+        }
+
+        // ==========================================
+        // EXIBE VISITANTES
+        // ==========================================
+
+        function exibirVisitantes(listaVisitantes) {
+
+            const lista =
+                document.getElementById(
+                    "listaVisitantes"
+                );
+
+            const mensagem =
+                document.getElementById(
+                    "mensagemVisitantes"
+                );
+
+            lista.innerHTML = "";
+
+            if (listaVisitantes.length === 0) {
+
+                mensagem.textContent =
+                    "Nenhum visitante encontrado.";
+
+                return;
+            }
+
+            mensagem.textContent =
+                `${listaVisitantes.length} visitante(s) encontrado(s).`;
+
+            listaVisitantes.forEach((visitante) => {
+
+                const registro =
+                    document.createElement("div");
+
+                registro.className =
+                    "visitante-card";
+
+                const nome =
+                    document.createElement("strong");
+
+                nome.textContent =
+                    visitante.nome;
+
+                const pessoa =
+                    document.createElement("span");
+
+                pessoa.textContent =
+                    `Visitando: ${visitante.pessoaVisitada}`;
+
+                const motivo =
+                    document.createElement("span");
+
+                motivo.textContent =
+                    `Motivo: ${visitante.motivo}`;
+
+                const data =
+                    document.createElement("span");
+
+                data.textContent =
+                    `Data: ${visitante.dataHora}`;
+
+                const registradoPor =
+                    document.createElement("span");
+
+                registradoPor.textContent =
+                    `Registrado por: ${visitante.registradoPor}`;
+
+                registro.appendChild(nome);
+                registro.appendChild(pessoa);
+                registro.appendChild(motivo);
+                registro.appendChild(data);
+                registro.appendChild(registradoPor);
+
+                lista.appendChild(registro);
+
+            });
+        }
+
+        // ==========================================
+        // FILTRO DE VISITANTES
+        // ==========================================
+
+        function filtrarVisitantes() {
+
+            const busca =
+                document.getElementById(
+                    "buscaVisitante"
+                ).value
+                .toLowerCase()
+                .trim();
+
+            const filtrados =
+                visitantes.filter((visitante) => {
+
+                    return (
+                        visitante.nome
+                            .toLowerCase()
+                            .includes(busca)
+                        ||
+                        visitante.pessoaVisitada
+                            .toLowerCase()
+                            .includes(busca)
+                    );
+
+                });
+
+            exibirVisitantes(filtrados);
         }
 
         // ==========================================
