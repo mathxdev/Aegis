@@ -1,13 +1,21 @@
 const express = require("express");
+
 const path = require("path");
+
 const bcrypt = require("bcrypt");
+
 const session = require("express-session");
+
 const { Pool } = require("pg");
-const { ok } = require("assert");
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+
+if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
+    console.error("SESSION_SECRET não configurada.");
+    process.exit(1);
+}
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -50,7 +58,7 @@ app.set("trust proxy", 1);
 
 app.use(
     session({
-        secret: process.env.SESSION_SECRET || "aegis-chave-secreta",
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
@@ -91,6 +99,28 @@ app.post("/api/cadastro", async (req, res) => {
             });
         }
 
+        if (
+            typeof nome !== "string" ||
+            typeof usuario !== "string" ||
+            typeof senha !== "string"
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Dados inválidos."
+            });
+        }
+
+        if (
+            nome.length > 100 ||
+            usuario.length > 50 ||
+            senha.length > 100
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Dados excedem o limite permitido."
+            });
+        }
+
         const usuarioExiste = await pool.query(
             "SELECT id FROM usuarios WHERE usuario = $1",
             [usuario]
@@ -116,6 +146,7 @@ app.post("/api/cadastro", async (req, res) => {
             sucesso: true,
             mensagem: "Cadastro realizado com sucesso!"
         });
+
     } catch (erro) {
         console.error("Erro no cadastro:", erro);
 
@@ -134,6 +165,16 @@ app.post("/api/login", async (req, res) => {
             return res.status(400).json({
                 sucesso: false,
                 mensagem: "Informe usuário e senha."
+            });
+        }
+
+        if (
+            typeof usuario !== "string" ||
+            typeof senha !== "string"
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Dados inválidos."
             });
         }
 
@@ -175,6 +216,7 @@ app.post("/api/login", async (req, res) => {
             sucesso: true,
             mensagem: "Login realizado com sucesso!"
         });
+
     } catch (erro) {
         console.error("Erro no login:", erro);
 
@@ -210,6 +252,8 @@ app.post("/api/logout", (req, res) => {
             });
         }
 
+        res.clearCookie("connect.sid");
+
         res.json({
             sucesso: true,
             mensagem: "Sessão encerrada."
@@ -239,6 +283,28 @@ app.post("/api/visitantes", async (req, res) => {
             });
         }
 
+        if (
+            typeof nome !== "string" ||
+            typeof pessoaVisitada !== "string" ||
+            typeof motivo !== "string"
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Dados inválidos."
+            });
+        }
+
+        if (
+            nome.length > 100 ||
+            pessoaVisitada.length > 100 ||
+            motivo.length > 1000
+        ) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Dados excedem o limite permitido."
+            });
+        }
+
         await pool.query(
             `INSERT INTO visitantes
             (nome, pessoa_visitada, motivo, data_hora, registrado_por)
@@ -257,6 +323,7 @@ app.post("/api/visitantes", async (req, res) => {
             sucesso: true,
             mensagem: "Visita registrada com sucesso!"
         });
+
     } catch (erro) {
         console.error("Erro ao registrar visitante:", erro);
 
@@ -292,6 +359,7 @@ app.get("/api/visitantes", async (req, res) => {
             sucesso: true,
             visitantes: resultado.rows
         });
+
     } catch (erro) {
         console.error("Erro ao buscar visitantes:", erro);
 
