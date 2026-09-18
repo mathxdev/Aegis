@@ -104,8 +104,6 @@ body {
     font-size: 13px;
 }
 
-/*FORMULÁRIO DE VISITANTE*/
-
 .visitor-form {
     width: 100%;
     margin-top: 50px;
@@ -141,8 +139,6 @@ body {
     margin-top: 10px;
 }
 
-/*MENSAGEM DE SUCESSO*/
-
 .success-message {
     width: 100%;
 
@@ -165,8 +161,6 @@ body {
 .success-message.show {
     display: block;
 }
-
-/*TELA DE LOGIN*/
 
 .login-form {
     width: 100%;
@@ -209,8 +203,6 @@ body {
 .login-form .btn {
     margin-top: 10px;
 }
-
-/* LISTA DE VISITANTES */
 
 .visitantes {
     width: 100%;
@@ -272,8 +264,6 @@ body {
     font-size: 13px;
     line-height: 1.4;
 }
-
-/* BUSCA DE VISITANTES */
 
 .busca-visitante {
     width: 100%;

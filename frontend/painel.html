@@ -70,10 +70,6 @@
 
         let visitantes = [];
 
-        // ==========================================
-        // VERIFICA A SESSÃO
-        // ==========================================
-
         async function verificarSessao() {
 
             try {
@@ -106,10 +102,6 @@
                 return false;
             }
         }
-
-        // ==========================================
-        // CARREGA VISITANTES
-        // ==========================================
 
         async function carregarVisitantes() {
 
@@ -148,10 +140,6 @@
                     "Erro ao conectar ao servidor.";
             }
         }
-
-        // ==========================================
-        // EXIBE VISITANTES
-        // ==========================================
 
         function exibirVisitantes(listaVisitantes) {
 
@@ -227,10 +215,6 @@
             });
         }
 
-        // ==========================================
-        // FILTRO DE VISITANTES
-        // ==========================================
-
         function filtrarVisitantes() {
 
             const busca =
@@ -258,10 +242,6 @@
             exibirVisitantes(filtrados);
         }
 
-        // ==========================================
-        // LOGOUT
-        // ==========================================
-
         async function sair() {
 
             try {
@@ -283,10 +263,6 @@
 
             window.location.href = "index.html";
         }
-
-        // ==========================================
-        // INICIALIZAÇÃO
-        // ==========================================
 
         async function iniciarPainel() {
 
