@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Aegis | Identificação</title>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -61,35 +59,59 @@
     </main>
 
     <script>
+
         const form = document.getElementById("loginForm");
 
         form.addEventListener("submit", async (event) => {
+
             event.preventDefault();
 
-            const usuario = document.getElementById("usuario").value;
-            const senha = document.getElementById("senha").value;
+            const usuario =
+                document.getElementById("usuario").value;
 
-            const resposta = await fetch("/api/login", {
-                method: "POST",
+            const senha =
+                document.getElementById("senha").value;
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+            try {
 
-                body: JSON.stringify({
-                    usuario: usuario,
-                    senha: senha
-                })
-            });
+                const resposta = await fetch("/api/login", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        usuario: usuario,
+                        senha: senha
+                    })
+                });
 
-            const dados = await resposta.json();
+                const dados = await resposta.json();
 
                 if (dados.sucesso) {
+
                     window.location.href = "painel.html";
+
                 } else {
+
                     alert(dados.mensagem);
+
                 }
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao realizar login:",
+                    erro
+                );
+
+                alert(
+                    "Erro ao conectar ao servidor."
+                );
+            }
+
         });
+
     </script>
 
 </body>

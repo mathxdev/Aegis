@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Aegis | Painel</title>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -74,10 +72,14 @@
 
             try {
 
-                const resposta = await fetch("/api/sessao");
+                const resposta = await fetch("/api/sessao", {
+                    credentials: "include"
+                });
 
                 if (!resposta.ok) {
+
                     window.location.href = "login.html";
+
                     return false;
                 }
 
@@ -108,7 +110,10 @@
             try {
 
                 const resposta = await fetch(
-                    "/api/visitantes"
+                    "/api/visitantes",
+                    {
+                        credentials: "include"
+                    }
                 );
 
                 if (!resposta.ok) {
@@ -211,7 +216,6 @@
                 registro.appendChild(registradoPor);
 
                 lista.appendChild(registro);
-
             });
         }
 
@@ -236,7 +240,6 @@
                             .toLowerCase()
                             .includes(busca)
                     );
-
                 });
 
             exibirVisitantes(filtrados);
@@ -249,7 +252,8 @@
                 await fetch(
                     "/api/logout",
                     {
-                        method: "POST"
+                        method: "POST",
+                        credentials: "include"
                     }
                 );
 
@@ -270,6 +274,7 @@
                 await verificarSessao();
 
             if (autenticado) {
+
                 await carregarVisitantes();
             }
         }
