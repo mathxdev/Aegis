@@ -46,6 +46,8 @@ async function inicializarBanco() {
 
 app.use(express.json());
 
+app.set("trust proxy", 1);
+
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "aegis-chave-secreta",
@@ -54,6 +56,7 @@ app.use(
         cookie: {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
             maxAge: 1000 * 60 * 60
         }
     })
