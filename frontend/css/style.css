@@ -272,3 +272,31 @@ body {
     font-size: 13px;
     line-height: 1.4;
 }
+
+/* BUSCA DE VISITANTES */
+
+.busca-visitante {
+    width: 100%;
+
+    margin-bottom: 15px;
+
+    padding: 15px;
+
+    background: #0f1318;
+    color: #ffffff;
+
+    border: 1px solid #3d4652;
+    border-radius: 10px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.busca-visitante::placeholder {
+    color: #697382;
+}
+
+.busca-visitante:focus {
+    border-color: #2f81f7;
+}
