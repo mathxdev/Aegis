@@ -6,11 +6,7 @@ const session = require("express-session");
 
 const app = express();
 
-const PORT = 3000;
-
-// ==========================================
-// CAMINHOS DOS DADOS
-// ==========================================
+const PORT = process.env.PORT || 3000;
 
 const caminhoUsuarios = path.join(
     __dirname,
@@ -22,15 +18,11 @@ const caminhoVisitantes = path.join(
     "../data/visitantes.json"
 );
 
-// ==========================================
-// CONFIGURAÇÕES
-// ==========================================
-
 app.use(express.json());
 
 app.use(
     session({
-        secret: "aegis-chave-secreta",
+        secret: process.env.SESSION_SECRET || "aegis-chave-secreta",
         resave: false,
         saveUninitialized: false,
         cookie: {
@@ -46,19 +38,11 @@ app.use(
     )
 );
 
-// ==========================================
-// PÁGINA INICIAL
-// ==========================================
-
 app.get("/", (req, res) => {
     res.sendFile(
         path.join(__dirname, "../frontend/index.html")
     );
 });
-
-// ==========================================
-// ROTA DE TESTE
-// ==========================================
 
 app.get("/api/teste", (req, res) => {
 
@@ -67,10 +51,6 @@ app.get("/api/teste", (req, res) => {
     });
 
 });
-
-// ==========================================
-// ROTA DE CADASTRO
-// ==========================================
 
 app.post("/api/cadastro", async (req, res) => {
 
@@ -155,15 +135,10 @@ app.post("/api/cadastro", async (req, res) => {
 
 });
 
-// ==========================================
-// ROTA DE REGISTRO DE VISITANTE
-// ==========================================
-
 app.post("/api/visitantes", (req, res) => {
 
     try {
 
-        // Verifica se existe usuário logado
         if (!req.session.usuario) {
 
             return res.status(401).json({
@@ -179,7 +154,6 @@ app.post("/api/visitantes", (req, res) => {
             motivo
         } = req.body;
 
-        // Verifica os campos
         if (!nome || !pessoaVisitada || !motivo) {
 
             return res.status(400).json({
@@ -189,7 +163,6 @@ app.post("/api/visitantes", (req, res) => {
 
         }
 
-        // Lê os visitantes existentes
         const visitantes = JSON.parse(
             fs.readFileSync(
                 caminhoVisitantes,
@@ -197,7 +170,6 @@ app.post("/api/visitantes", (req, res) => {
             )
         );
 
-        // Cria o registro
         const novoVisitante = {
 
             nome: nome,
@@ -214,10 +186,8 @@ app.post("/api/visitantes", (req, res) => {
 
         };
 
-        // Adiciona à lista
         visitantes.push(novoVisitante);
 
-        // Salva no arquivo
         fs.writeFileSync(
             caminhoVisitantes,
             JSON.stringify(
@@ -252,10 +222,6 @@ app.post("/api/visitantes", (req, res) => {
     }
 
 });
-
-// ==========================================
-// ROTA DE LOGIN
-// ==========================================
 
 app.post("/api/login", async (req, res) => {
 
@@ -306,7 +272,6 @@ app.post("/api/login", async (req, res) => {
 
         }
 
-        // Cria a sessão
         req.session.usuario = {
 
             nome: usuarioEncontrado.nome,
@@ -341,10 +306,6 @@ app.post("/api/login", async (req, res) => {
 
 });
 
-// ==========================================
-// VERIFICAÇÃO DA SESSÃO
-// ==========================================
-
 app.get("/api/sessao", (req, res) => {
 
     if (!req.session.usuario) {
@@ -362,10 +323,6 @@ app.get("/api/sessao", (req, res) => {
     });
 
 });
-
-// ==========================================
-// LOGOUT
-// ==========================================
 
 app.post("/api/logout", (req, res) => {
 
@@ -394,15 +351,10 @@ app.post("/api/logout", (req, res) => {
 
 });
 
-// ==========================================
-// LISTA DE VISITANTES
-// ==========================================
-
 app.get("/api/visitantes", (req, res) => {
 
     try {
 
-        // Verifica se existe usuário logado
         if (!req.session.usuario) {
             return res.status(401).json({
                 sucesso: false,
@@ -410,7 +362,6 @@ app.get("/api/visitantes", (req, res) => {
             });
         }
 
-        // Lê os visitantes registrados
         const visitantes = JSON.parse(
             fs.readFileSync(
                 caminhoVisitantes,
@@ -438,14 +389,8 @@ app.get("/api/visitantes", (req, res) => {
 
 });
 
-// ==========================================
-// INICIA O SERVIDOR
-// ==========================================
-
-app.listen(PORT, () => {
-
+app.listen(PORT, "0.0.0.0", () => {
     console.log(
-        `Servidor Aegis rodando em http://localhost:${PORT}`
+        `Servidor Aegis rodando na porta ${PORT}`
     );
-
 });
